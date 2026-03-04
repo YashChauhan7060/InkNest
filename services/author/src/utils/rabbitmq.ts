@@ -4,12 +4,12 @@ let channel: amqp.Channel;
 
 export const connectRabbitMQ = async () => {
   try {
-    const connection = await amqp.connect({
+    const connection = await amqp.connect(process.env.RABBITMQ_URL || {
       protocol: "amqp",
-      hostname: process.env.Rabbimq_Host,
-      port: 5672,
-      username: "admin",
-      password: "admin123",
+      hostname: process.env.Rabbitmq_Host,
+      port: process.env.Rabbitmq_Port ? parseInt(process.env.Rabbitmq_Port) : 5672,
+      username: process.env.Rabbitmq_Username,
+      password: process.env.Rabbitmq_Password,
     });
 
     channel = await connection.createChannel();
