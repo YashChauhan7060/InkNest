@@ -67,7 +67,7 @@ export const getAllBlogs = TryCatch(async (req, res) => {
 //   const { data } = await axios.get(
 //     `${process.env.USER_SERVICE}/api/v1/user/${blog[0].author}`
 //   );
-
+  
 //   const responseData = { blog: blog[0], author: data };
 
 //   await redisClient.set(cacheKey, JSON.stringify(responseData), { EX: 3600 });
@@ -100,7 +100,7 @@ export const getSingleBlog = TryCatch(async (req, res) => {
       `${process.env.USER_SERVICE}/api/v1/user/${blog[0].author}`
     );
     author = data;
-  } catch (err) {
+  } catch (err:any) {
     console.warn("Could not fetch author from user service:", err.message);
     // author stays null — blog still returns
   }

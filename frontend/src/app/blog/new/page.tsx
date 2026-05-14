@@ -17,10 +17,13 @@ import Cookies from "js-cookie";
 import axios from "axios";
 import toast from "react-hot-toast";
 import { author_service, blogCategories, useAppData } from "@/src/context/AppContext";
+import { useRouter } from "next/navigation";
 
 const JoditEditor = dynamic(() => import("jodit-react"), { ssr: false });
 
 const AddBlog = () => {
+  const router = useRouter(); 
+
   const editor = useRef(null);
   const [content, setContent] = useState("");
 
@@ -82,6 +85,7 @@ const AddBlog = () => {
       setContent("");
       setTimeout(() => {
         fetchBlogs();
+        router.push("/blogs");
       }, 4000);
     } catch (error) {
       console.log(error);

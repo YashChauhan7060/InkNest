@@ -11,6 +11,20 @@ import { GoogleGenerativeAI } from "@google/generative-ai";
 export const createBlog = TryCatch(async (req: AuthenticatedRequest, res) => {
   const { title, description, blogcontent, category } = req.body;
 
+  const validCategories = [
+    "Placements",
+    "Internships", 
+    "Research",
+    "College Fest",
+    "Campus Life",
+    "Study Resources",
+    "Opportunities",
+    "Other",
+  ];
+
+  const finalCategory = validCategories.includes(category) ? category : "Other";
+
+
   const file = req.file;
 
   if (!file) {
@@ -34,7 +48,7 @@ export const createBlog = TryCatch(async (req: AuthenticatedRequest, res) => {
   });
 
   const result =
-    await sql`INSERT INTO blogs (title, description, image, blogcontent,category, author) VALUES (${title}, ${description},${cloud.secure_url},${blogcontent},${category},${req.user?._id}) RETURNING *`;
+    await sql`INSERT INTO blogs (title, description, image, blogcontent,category, author) VALUES (${title}, ${description},${cloud.secure_url},${blogcontent},${finalCategory},${req.user?._id}) RETURNING *`;
 
   await invalidateChacheJob(["blogs:*"]);
 
@@ -49,9 +63,23 @@ export const updateBlog = TryCatch(async (req: AuthenticatedRequest, res) => {
   const { id } = req.params;
   const { title, description, blogcontent, category } = req.body;
 
+  const validCategories = [
+    "Placements",
+    "Internships", 
+    "Research",
+    "College Fest",
+    "Campus Life",
+    "Study Resources",
+    "Opportunities",
+    "Other",
+  ];
+
+  const finalCategory = validCategories.includes(category) ? category : "Other";
+
+
   const file = req.file;
 
-  const blog = await sql`SELECT * FROM blogs WHERE id = ${id}`;
+  const blog = await sql`SELECT * FROM blogs WHERE id = ${parseInt(id)}`;
 
   if (!blog.length) {
     res.status(404).json({
@@ -92,7 +120,7 @@ export const updateBlog = TryCatch(async (req: AuthenticatedRequest, res) => {
     description = ${description || blog[0].description},
     image= ${imageUrl},
     blogcontent = ${blogcontent || blog[0].blogcontent},
-    category = ${category || blog[0].category}
+    category = ${finalCategory || blog[0].category}
 
     WHERE id = ${id}
     RETURNING *
@@ -108,7 +136,7 @@ export const updateBlog = TryCatch(async (req: AuthenticatedRequest, res) => {
 });
 
 export const deleteBlog = TryCatch(async (req: AuthenticatedRequest, res) => {
-  const blog = await sql`SELECT * FROM blogs WHERE id = ${req.params.id}`;
+ const blog = await sql`SELECT * FROM blogs WHERE id = ${parseInt(req.params.id)}`;
 
   if (!blog.length) {
     res.status(404).json({

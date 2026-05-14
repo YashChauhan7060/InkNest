@@ -13,6 +13,7 @@ import { GoogleGenAI } from "@google/genai";
 
 export const loginUser = TryCatch(async (req, res) => {
   const { code } = req.body;
+  console.log("code received:", code);
 
   if (!code) {
     res.status(400).json({
@@ -21,30 +22,44 @@ export const loginUser = TryCatch(async (req, res) => {
     return;
   }
 
+  let googleRes;
 
-  const googleRes = await oauth2client.getToken(code);
+  try{
+      googleRes = await oauth2client.getToken(code);
+      console.log("googleRes tokens:", googleRes.tokens);
+      oauth2client.setCredentials(googleRes.tokens);
+  }
+  catch(googleError){
+      console.log("Google getToken failed:", googleError);
+      res.status(500).json({ message: "Google auth failed", error: googleError });
+      return;
+  }
 
-  oauth2client.setCredentials(googleRes.tokens);
-
+  console.log("step 1 - fetching userinfo");
   const userRes = await axios.get(`https://www.googleapis.com/oauth2/v1/userinfo?alt=json&access_token=${googleRes.tokens.access_token}`);
 
-  
+  console.log("step 2 - userRes:", userRes.data);
   const { email, name, picture } = userRes.data as any;
 
+  console.log("step 3 - finding user in DB");
   let user = await User.findOne({ email });
 
+  console.log("step 4 - user found:", user);
   if (!user) {
     user = await User.create({
       name,
       email,
       image: picture,
     });
+    console.log("step 5 - user created:", user);
   }
 
+  console.log("step 6 - signing JWT");
   const token = jwt.sign({ user }, process.env.JWT_SEC as string, {
     expiresIn: "5d",
   });
 
+  console.log("step 7 - sending response");
   res.status(200).json({
     message: "Login success",
     token,

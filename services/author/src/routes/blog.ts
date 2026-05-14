@@ -7,7 +7,7 @@ import { writeLimiter, normalLimiter } from "../utils/rateLimiter.js";
 const router = express.Router();
 
 router.post("/blog/new",        writeLimiter,  isAuth, uploadFile, createBlog);  // 10/min - prevent spam
-router.post("/blog/:id",        writeLimiter,  isAuth, uploadFile, updateBlog);  // 10/min
+router.put("/blog/:id",        writeLimiter,  isAuth, uploadFile, updateBlog);  // 10/min
 router.delete("/blog/:id",      writeLimiter,  isAuth, deleteBlog);              // 10/min
 router.post("/ai/title",        normalLimiter, aiTitleResponse);                 // 30/min
 router.post("/ai/descripiton",  normalLimiter, aiDescriptionResponse);           // 30/min

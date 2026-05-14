@@ -21,13 +21,35 @@ export class RateLimiter {
   constructor(config: RateLimiterConfig) {
     this.serviceName = config.serviceName;
 
+    // ── Prevent Redis from crashing the entire Node process ──
+    process.on("uncaughtException", (err) => {
+      if (err.message?.includes("Socket closed unexpectedly") ||
+          err.message?.includes("ECONNRESET") ||
+          err.message?.includes("read ECONNRESET")) {
+        console.error(`[${this.serviceName}] Redis socket error caught:`, err.message);
+        this.isConnected = false;
+        // Don't rethrow — let the app keep running
+      }
+    });
+
     this.redisClient = createClient({
       url: config.redisUrl,
+      socket: {
+        reconnectStrategy: (retries) => {
+          if (retries > 3) {
+            console.error(`[${this.serviceName}] Redis max retries reached, giving up`);
+            return false; // stop retrying, but don't crash
+          }
+          return Math.min(retries * 1000, 5000);
+        },
+      },
     }) as RedisClientType;
 
+    // ── Handle all Redis errors gracefully ──
     this.redisClient.on("error", (err) => {
-      console.error(`[${this.serviceName}] RateLimiter Error:`, err.message);
+      console.error(`[${this.serviceName}] RateLimiter Redis Error:`, err.message);
       this.isConnected = false;
+      // Swallow the error — don't let it propagate
     });
 
     this.redisClient.on("connect", () => {
@@ -35,8 +57,19 @@ export class RateLimiter {
       this.isConnected = true;
     });
 
+    this.redisClient.on("reconnecting", () => {
+      console.log(`[${this.serviceName}] 🔄 RateLimiter reconnecting to Redis...`);
+    });
+
+    this.redisClient.on("end", () => {
+      console.log(`[${this.serviceName}] Redis connection ended`);
+      this.isConnected = false;
+    });
+
+    // ── Connect but never crash if it fails ──
     this.redisClient.connect().catch((err) => {
       console.error(`[${this.serviceName}] RateLimiter connect failed:`, err.message);
+      this.isConnected = false;
     });
   }
 
@@ -75,18 +108,12 @@ export class RateLimiter {
         let count      = parseInt(currentCount || "0");
         const lastLeak = parseInt(lastLeakTime || `${now}`);
 
-        // ── LEAKY BUCKET CORE ──────────────────────
-        // 1. How much time passed since last request?
         const timePassed    = (now - lastLeak) / 1000;
         const leakPerSecond = leakRate / windowInSeconds;
+        const leaked        = Math.floor(timePassed * leakPerSecond);
 
-        // 2. Calculate how many requests leaked out
-        const leaked = Math.floor(timePassed * leakPerSecond);
-
-        // 3. Drain the bucket
         count = Math.max(0, count - leaked);
 
-        // 4. Bucket full → reject request
         if (count >= bucketCapacity) {
           const retryAfter = Math.ceil(
             (count - bucketCapacity + 1) / leakPerSecond
@@ -105,21 +132,11 @@ export class RateLimiter {
           return;
         }
 
-        // 5. Allow request → add to bucket
         count += 1;
 
-        // 6. Save updated state to Redis
         await Promise.all([
-          this.redisClient.set(
-            bucketKey,
-            count.toString(),
-            { EX: windowInSeconds * 2 }
-          ),
-          this.redisClient.set(
-            timestampKey,
-            now.toString(),
-            { EX: windowInSeconds * 2 }
-          ),
+          this.redisClient.set(bucketKey, count.toString(), { EX: windowInSeconds * 2 }),
+          this.redisClient.set(timestampKey, now.toString(), { EX: windowInSeconds * 2 }),
         ]);
 
         res.setHeader("X-RateLimit-Limit", bucketCapacity);
@@ -129,47 +146,24 @@ export class RateLimiter {
         next();
 
       } catch (error) {
-        // Never block on rate limiter error
         console.error(`[${this.serviceName}] Rate limiter error:`, error);
-        next();
+        this.isConnected = false;
+        next(); // never block on error
       }
     };
   }
 
   strictLimiter() {
-    return this.createLimiter({
-      bucketCapacity: 5,
-      leakRate: 5,
-      windowInSeconds: 60,
-      keyPrefix: "strict",
-    });
+    return this.createLimiter({ bucketCapacity: 5,   leakRate: 5,   windowInSeconds: 60, keyPrefix: "strict" });
   }
-
   normalLimiter() {
-    return this.createLimiter({
-      bucketCapacity: 30,
-      leakRate: 30,
-      windowInSeconds: 60,
-      keyPrefix: "normal",
-    });
+    return this.createLimiter({ bucketCapacity: 30,  leakRate: 30,  windowInSeconds: 60, keyPrefix: "normal" });
   }
-
   readLimiter() {
-    return this.createLimiter({
-      bucketCapacity: 100,
-      leakRate: 100,
-      windowInSeconds: 60,
-      keyPrefix: "read",
-    });
+    return this.createLimiter({ bucketCapacity: 100, leakRate: 100, windowInSeconds: 60, keyPrefix: "read"   });
   }
-
   writeLimiter() {
-    return this.createLimiter({
-      bucketCapacity: 10,
-      leakRate: 10,
-      windowInSeconds: 60,
-      keyPrefix: "write",
-    });
+    return this.createLimiter({ bucketCapacity: 10,  leakRate: 10,  windowInSeconds: 60, keyPrefix: "write"  });
   }
 
   async disconnect(): Promise<void> {

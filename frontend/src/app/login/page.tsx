@@ -1,5 +1,5 @@
 "use client";
-import React from 'react'
+import React, { useEffect } from 'react'
 import { Button } from '@/components/ui/button'
 import { 
     Card,
@@ -14,7 +14,7 @@ import axios from "axios";
 import Cookies from "js-cookie";
 import toast from "react-hot-toast";
 import { useGoogleLogin } from "@react-oauth/google";
-import { redirect } from 'next/navigation';
+import { useRouter  } from 'next/navigation';
 import Loading from '@/src/components/loading';
 
 
@@ -22,7 +22,14 @@ import Loading from '@/src/components/loading';
 const LoginPage = () => {
   const { isAuth, setIsAuth, loading, setLoading, setUser } = useAppData();
 
-  if (isAuth) return redirect("/");
+  const router = useRouter();
+
+  useEffect(() => {
+    if (isAuth) {
+      router.push("/");
+    }
+  }, [isAuth]);
+
 
   const responseGoogle = async (authResult: any) => {
     setLoading(true);

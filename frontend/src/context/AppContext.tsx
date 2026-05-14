@@ -13,22 +13,23 @@ import toast, { Toaster } from "react-hot-toast";
 import { GoogleOAuthProvider } from "@react-oauth/google";
 import { get } from "http";
 
-export const user_service = "https://user-service2-pejo.onrender.com";
-export const author_service = "https://author-service2.onrender.com";
-export const blog_service = "https://blog-service2-qipr.onrender.com";
+// export const user_service = "https://user-service2-pejo.onrender.com";
+// export const author_service = "https://author-service2.onrender.com";
+// export const blog_service = "https://blog-service2-qipr.onrender.com";
 
-// export const user_service = "http://localhost:5000";
-// export const author_service = "http://localhost:5001";
-// export const blog_service = "http://localhost:5002";
+export const user_service = "http://localhost:5000";
+export const author_service = "http://localhost:5001";
+export const blog_service = "http://localhost:5002";
 
 export const blogCategories = [
-  "Techonlogy",
-  "Health",
-  "Finance",
-  "Travel",
-  "Education",
-  "Entertainment",
-  "Study",
+  "Placements",
+  "Internships",
+  "Research",
+  "College Fest",
+  "Campus Life",
+  "Study Resources",
+  "Opportunities",
+  "Other",
 ];
 
 export interface User {
@@ -93,6 +94,12 @@ export const AppProvider: React.FC<AppProviderProps> = ({ children }) => {
     try {
       const token = Cookies.get("token");
 
+      if (!token) {
+        setLoading(false);
+        return;
+      }
+
+
       const { data } = await axios.get(`${user_service}/api/v1/me`, {
         headers: {
           Authorization: `Bearer ${token}`,
@@ -133,6 +140,9 @@ export const AppProvider: React.FC<AppProviderProps> = ({ children }) => {
 
   async function getSavedBlogs() {
     const token = Cookies.get("token");
+    
+    if (!token) return;
+
     try {
       const { data } = await axios.get(
         `${blog_service}/api/v1/blog/saved/all`,
