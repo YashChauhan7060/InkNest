@@ -22,20 +22,20 @@ const BlogCard: React.FC<BlogCardProps> = ({
   return (
     <Link href={`/blog/${id}`}>
       <Card className="overflow-hidden rounded-lg shadow-none transition-shadow duration-300 hover:shadow-xl border-none">
-        <div className="w-full h-[210px]">
+        <div className="w-full h-52.5">
           <img src={image} alt={title} className="w-full h-full object-cover" />
         </div>
 
         <div className="p-0">
           <div>
-            <p className="flex items-center justify-center gap-2 text-sm text-gray-500">
+            <p className="flex items-center justify-center gap-2 text-sm text-gray-500 dark:text-stone-400">
               <Calendar size={16} />
               <span>{moment(time).format("DD-MM-YYYY")}</span>
             </p>
-            <h2 className="text-lg font-semibold mt-1 line-clamp-1 text-center">
+            <h2 className="text-lg font-semibold mt-1 line-clamp-1 text-center text-stone-900 dark:text-stone-100">
               {title}
             </h2>
-            <p className="text-center">{desc.slice(0, 30)}...</p>
+            <p className="text-center  text-gray-600 dark:text-stone-300">{desc.slice(0, 30)}...</p>
           </div>
         </div>
       </Card>

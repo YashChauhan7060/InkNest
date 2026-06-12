@@ -11,7 +11,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { RefreshCw } from "lucide-react";
-import React, { useMemo, useRef, useState } from "react";
+import React, { useEffect, useMemo, useRef, useState } from "react";
 import dynamic from "next/dynamic";
 import Cookies from "js-cookie";
 import axios from "axios";
@@ -28,8 +28,9 @@ const AddBlog = () => {
   const [content, setContent] = useState("");
 
   const { fetchBlogs } = useAppData();
-
+ 
   const [loading, setLoading] = useState(false);
+ 
   const [formData, setFormData] = useState({
     title: "",
     description: "",
@@ -37,7 +38,19 @@ const AddBlog = () => {
     image: null,
     blogcontent: "",
   });
+  const [isDark, setIsDark] = useState(false);
 
+useEffect(() => {
+  setIsDark(document.documentElement.classList.contains("dark"));
+  const observer = new MutationObserver(() => {
+    setIsDark(document.documentElement.classList.contains("dark"));
+  });
+  observer.observe(document.documentElement, {
+    attributes: true,
+    attributeFilter: ["class"],
+  });
+  return () => observer.disconnect();
+}, []);
   const handleInputChange = (e: any) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
@@ -152,17 +165,21 @@ const AddBlog = () => {
   };
 
   const config = useMemo(
-    () => ({
-      readonly: false, // all options from https://xdsoft.net/jodit/docs/,
-      placeholder: "Start typings...",
-    }),
-    []
-  );
+  () => ({
+    readonly: false,
+    placeholder: "Start typings...",
+    theme: isDark ? "dark" : "default",
+    style: isDark
+      ? { background: "#1a1a1a", color: "#f5f5f5" }
+      : {},
+  }),
+  [isDark]
+);
   return (
     <div className="max-w-4xl mx-auto p-6">
       <Card>
         <CardHeader>
-          <h2 className="text-2xl font-bold">Add New Blog</h2>
+          <h2 className="text-2xl font-bold dark:text-stone-100">Add New Blog</h2>
         </CardHeader>
         <CardContent>
           <form onSubmit={handleSubmit} className="space-y-4">

@@ -6,6 +6,7 @@ import Cookies from "js-cookie";
 import axios from "axios";
 import toast from "react-hot-toast";
 import { Facebook, Instagram, Linkedin } from "lucide-react";
+import { Camera, LogOut, PlusCircle, Edit3 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
   Dialog,
@@ -109,17 +110,19 @@ const ProfilePage = () => {
   };
 
   return (
-    <div className="flex justify-center items-center min-h-screen p-4 w-full">
+    <div className="flex justify-center items-center min-h-screen p-4 w-full bg-background">
       {loading ? (
         <Loading />
       ) : (
-        <Card className="w-full max-w-xl shadow-lg border rounded-2xl p-6">
-          <CardHeader className="text-center">
-            <CardTitle className="text-2xl font-semibold">Profile</CardTitle>
+        <Card className="w-full max-w-lg border-border shadow-2xl rounded-3xl overflow-hidden bg-card">
+          
+          <CardHeader className="text-center text-gray-900 dark:text-stone-400">
+            <CardTitle className="text-2xl font-semibold dark:text-stone-400">Profile</CardTitle>
 
             <CardContent className="flex flex-col items-center space-y-4">
+              <div className="relative group cursor-pointer" onClick={clickHandler}></div>
               <Avatar
-                className="w-28 h-28 border-4 border-gray-200 shadow-md cursor-pointer"
+                className="w-28 h-28 border-4 border-gray-200 shadow-md cursor-pointer dark:text-stone-400"
                 onClick={clickHandler}
               >
                 <AvatarImage src={user?.image} alt="profile pic" />
