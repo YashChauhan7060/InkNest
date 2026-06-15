@@ -97,7 +97,7 @@ Cloud_Api_Key=your_api_key
 Cloud_Api_Secret=your_api_secret
 Gemini_Api_Key=your_gemini_key
 
-###Installations
+##Installations
 # 1. Clone the repository
 git clone [https://github.com/YashChauhan7060/InkNest.git](https://github.com/YashChauhan7060/InkNest.git)
 cd InkNest
@@ -112,7 +112,25 @@ cd backend/user && npm install && npm run dev
 cd backend/author && npm install && npm run dev
 cd backend/blog && npm install && npm run dev
 
-👨‍💻Contributors
-Yash Chauhan
-Mahi Agnihotri
-Ansh Maheshwari
+## 🤝 Contributors
+
+We built InkNest as a collaborative effort, splitting the architecture into specialized domains.
+
+<table align="center">
+  <tr>
+    <td align="center">
+      <a href="https://github.com/YashChauhan7060">
+        <img src="https://github.com/YashChauhan7060.png" width="100px;" alt="Yash Chauhan"/><br />
+        <sub><b>Yash Chauhan</b></sub>
+      </a><br />
+      <i>Backend & System Architect</i>
+    </td>
+    <td align="center">
+      <a href="https://github.com/anshmaheshwari82">
+        <img src="https://github.com/anshmaheshwari82.png" width="100px;" alt="Ansh Maheshwari"/><br />
+        <sub><b>Ansh Maheshwari</b></sub>
+      </a><br />
+      <i>Frontend & DevOps</i>
+    </td>
+  </tr>
+</table>
