@@ -14,6 +14,7 @@
 InkNest is a modern, full-stack blogging platform engineered for high availability, low latency, and zero data loss. Moving beyond traditional monolithic design, InkNest employs a decoupled **Next.js** frontend powered by a backend **Microservices Architecture** with a CQRS-inspired separation of Read and Write operations.
 
 ---
+<img width="1900" height="767" alt="InkNest Architecture" src="https://github.com/user-attachments/assets/1d5b48e0-4056-46a8-b59a-b77d7f007f2c" />
 
 ## 🏗️ System Architecture
 
@@ -25,7 +26,6 @@ InkNest is separated into a modern Client interface and three distinct, independ
 4. **Author Service (Write & Compute Node):** A protected environment handling expensive computing operations like database writes, AI content generation, and cloud media uploads.
 
 ---
-<img width="1900" height="767" alt="image" src="https://github.com/user-attachments/assets/1d5b48e0-4056-46a8-b59a-b77d7f007f2c" />
 
 ## ✨ Core Features
 
@@ -72,6 +72,7 @@ InkNest/
 │   ├── blog/             # The Public Read Microservice
 │   └── user/             # The Authentication Microservice
 
+```
 ## 🚀 Getting Started
 
 ### Prerequisites
@@ -96,8 +97,19 @@ Cloud_Name=your_cloud_name
 Cloud_Api_Key=your_api_key
 Cloud_Api_Secret=your_api_secret
 Gemini_Api_Key=your_gemini_key
+```
 
-##Installations
+**Frontend (`.env.local`):**
+```env
+NEXT_PUBLIC_USER_API=http://localhost:5000/api/v1
+NEXT_PUBLIC_BLOG_API=http://localhost:5001/api/v1
+NEXT_PUBLIC_AUTHOR_API=http://localhost:5002/api/v1
+GOOGLE_CLIENT_ID=your_google_oauth_client_id
+GOOGLE_CLIENT_SECRET=your_google_oauth_client_secret
+```
+
+### Installation & Execution
+```bash
 # 1. Clone the repository
 git clone [https://github.com/YashChauhan7060/InkNest.git](https://github.com/YashChauhan7060/InkNest.git)
 cd InkNest
@@ -111,26 +123,11 @@ npm run dev
 cd backend/user && npm install && npm run dev
 cd backend/author && npm install && npm run dev
 cd backend/blog && npm install && npm run dev
+```
+
+---
 
 ## 🤝 Contributors
-
-We built InkNest as a collaborative effort, splitting the architecture into specialized domains.
-
-<table align="center">
-  <tr>
-    <td align="center">
-      <a href="https://github.com/YashChauhan7060">
-        <img src="https://github.com/YashChauhan7060.png" width="100px;" alt="Yash Chauhan"/><br />
-        <sub><b>Yash Chauhan</b></sub>
-      </a><br />
-      <i>Backend & System Architect</i>
-    </td>
-    <td align="center">
-      <a href="https://github.com/anshmaheshwari82">
-        <img src="https://github.com/anshmaheshwari82.png" width="100px;" alt="Ansh Maheshwari"/><br />
-        <sub><b>Ansh Maheshwari</b></sub>
-      </a><br />
-      <i>Frontend & DevOps</i>
-    </td>
-  </tr>
-</table>
+* **Yash Chauhan**
+* **Mahi Agnihotri**
+* **Ansh Maheshwari**
