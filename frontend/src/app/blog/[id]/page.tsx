@@ -188,8 +188,8 @@ const BlogPage = () => {
     <div className="w-full max-w-3xl mx-auto p-6 space-y-6">
       <Card>
         <CardHeader>
-          <h1 className="text-3xl font-bold text-gray-900">{blog.title}</h1>
-          <p className="text-gray-600 mt-2 flex items-center">
+          <h1 className="text-3xl font-bold text-gray-300">{blog.title}</h1>
+          <p className="text-gray-400 mt-2 flex items-center">
             <Link
               className="flex items-center gap-2"
               href={`/profile/${author?._id}`}
@@ -239,7 +239,7 @@ const BlogPage = () => {
             alt=""
             className="w-full h-64 object-cover rounded-lg mb-4"
           />
-          <p className="text-lg text-gray-700 mb-4">{blog.description}</p>
+          <p className="text-lg text-gray-300 mb-4">{blog.description}</p>
           <div
             className="prose max-w-none"
             dangerouslySetInnerHTML={{ __html: blog.blogcontent }}

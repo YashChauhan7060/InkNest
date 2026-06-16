@@ -37,7 +37,19 @@ const EditBlogPage = () => {
     image: null,
     blogcontent: "",
   });
+  const [isDark, setIsDark] = useState(false);
 
+useEffect(() => {
+  setIsDark(document.documentElement.classList.contains("dark"));
+  const observer = new MutationObserver(() => {
+    setIsDark(document.documentElement.classList.contains("dark"));
+  });
+  observer.observe(document.documentElement, {
+    attributes: true,
+    attributeFilter: ["class"],
+  });
+  return () => observer.disconnect();
+}, []);
   const handleInputChange = (e: any) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
@@ -48,12 +60,16 @@ const EditBlogPage = () => {
   };
 
   const config = useMemo(
-    () => ({
-      readonly: false, // all options from https://xdsoft.net/jodit/docs/,
-      placeholder: "Start typings...",
-    }),
-    []
-  );
+  () => ({
+    readonly: false,
+    placeholder: "Start typings...",
+    theme: isDark ? "dark" : "default",
+    style: isDark
+      ? { background: "#1a1a1a", color: "#f5f5f5" }
+      : {},
+  }),
+  [isDark]
+);
 
   const [existingImage, setExistingImage] = useState(null);
 

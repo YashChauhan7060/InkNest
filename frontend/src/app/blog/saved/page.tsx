@@ -17,7 +17,7 @@ const SavedBlogs = () => {
 
   return (
     <div className="container mx-auto px-4">
-      <h1 className="text-3xl font-bold mt-2">Saved Blogs</h1>
+      <h1 className="text-3xl font-bold mt-2 dark:text-stone-100">Saved Blogs</h1>
       <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3">
         {filteredBlogs.length > 0 ? (
           filteredBlogs.map((e, i) => {
@@ -33,7 +33,7 @@ const SavedBlogs = () => {
             );
           })
         ) : (
-          <p>No saved blogs yet!</p>
+          <p className="dark:text-stone-100">No saved blogs yet!</p>
         )}
       </div>
     </div>
